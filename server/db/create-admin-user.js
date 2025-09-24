@@ -13,6 +13,9 @@ const knexfile = require('./knexfile');
 
 const knex = initKnex(knexfile);
 
+const getEnvOrPrompt = async (envVar, ...args) =>
+  process.env[envVar] ? process.env[envVar] : await input(...args);
+
 const input = async (fieldName, options = {}) => {
   const readOptions = {
     prompt: `${fieldName}${!options.isRequired ? ' (optional)' : ''}: `,
@@ -47,20 +50,13 @@ const input = async (fieldName, options = {}) => {
   try {
     await knex.migrate.latest();
 
-    process.env.DEFAULT_ADMIN_EMAIL = await input('Email', {
-      isRequired: true,
-    });
+    process.env.DEFAULT_ADMIN_EMAIL = await getEnvOrPrompt('DEFAULT_ADMIN_EMAIL', 'Email', { isRequired: true });
 
-    process.env.DEFAULT_ADMIN_PASSWORD = await input('Password', {
-      isRequired: true,
-      isPassword: true,
-    });
+    process.env.DEFAULT_ADMIN_PASSWORD = await getEnvOrPrompt('DEFAULT_ADMIN_PASSWORD', 'Password', { isRequired: true, isPassword: true });
 
-    process.env.DEFAULT_ADMIN_NAME = await input('Name', {
-      isRequired: true,
-    });
+    process.env.DEFAULT_ADMIN_NAME = await getEnvOrPrompt('DEFAULT_ADMIN_NAME', 'Name', { isRequired: true });
 
-    process.env.DEFAULT_ADMIN_USERNAME = await input('Username');
+    process.env.DEFAULT_ADMIN_USERNAME = await getEnvOrPrompt('DEFAULT_ADMIN_USERNAME', 'Username');
 
     await knex.seed.run({
       specific: 'default.js',

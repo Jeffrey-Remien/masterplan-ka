@@ -52,5 +52,6 @@ module.exports.datastores = {
 
     adapter: 'sails-postgresql',
     url: process.env.DATABASE_URL,
+    migrate: 'alter', // or 'drop' for empty DB and destroying all data on boot!
   },
 };
